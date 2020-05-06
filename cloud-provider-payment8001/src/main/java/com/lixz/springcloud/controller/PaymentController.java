@@ -4,11 +4,13 @@ import com.lixz.springcloud.entities.CommonResult;
 import com.lixz.springcloud.entities.Payment;
 import com.lixz.springcloud.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author lixz
@@ -20,6 +22,9 @@ public class PaymentController {
 
     @Resource
     private PaymentService paymentService;
+
+    @Resource
+    private DiscoveryClient discoveryClient;    //对于注册进Eureka里面的微服务，可以通过服务发现来获得该服务的信息
 
     @Value("${server.port}")
     private String serverPort;
@@ -44,5 +49,20 @@ public class PaymentController {
         }else{
             return new CommonResult(444, "没有对应记录，查询ID：" + id, null);
         }
+    }
+
+    @GetMapping(value = ("/payment/discovery"))
+    public Object discovery(){
+        List<String> services =  discoveryClient.getServices();     //获取注册进Eureka中的服务名称
+        for(String element : services){
+            log.info("*******element:" + element);
+        }
+
+        //获取该服务名称对应的实例化
+        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");    //参数：服务名称
+        for(ServiceInstance instance : instances){
+            log.info(instance.getServiceId() + "\t" + instance.getHost() + "\t" + instance.getPort() + "\t" + instance.getUri());
+        }
+        return this.discoveryClient;
     }
 }
