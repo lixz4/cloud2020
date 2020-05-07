@@ -1,0 +1,12 @@
+#8004表示注册到zookeeper服务器的服务提供者的端口号
+server:
+  port: 8004
+
+
+#服务别名----注册zookeeper到注册中心名称
+spring:
+  application:
+    name: cloud-provider-payment
+  cloud:
+    zookeeper:
+      connect-string: 10.162.1.104:2181
