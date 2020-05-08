@@ -23,5 +23,4 @@ public class OrderZKController {
         String result = restTemplate.getForObject(INVOKE_URL + "/payment/zk", String.class);    //参数：url, 返回值类型
         return result;
     }
-
 }
